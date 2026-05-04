@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Folio & Co. — Books Worth Living For</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Libre+Baskerville:ital@1&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:   #F5F0E8;
+      --warm:    #EDE5D4;
+      --ink:     #1A1410;
+      --brown:   #5C3D2E;
+      --rust:    #C0541A;
+      --gold:    #D4A853;
+      --sage:    #7A8C6E;
+      --muted:   #8A7968;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--rust);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+      mix-blend-mode: multiply;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--rust);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 60px;
+      background: rgba(245,240,232,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(92,61,46,0.12);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .nav-logo span { color: var(--rust); }
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--rust); }
+    .nav-actions {
+      display: flex; align-items: center; gap: 20px;
+    }
+    .btn-cart {
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      padding: 10px 22px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      cursor: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-cart:hover { background: var(--rust); transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(212,168,83,0.13) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 60px 80px 60px;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rust);
+      font-weight: 500;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.2s forwards;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 5.5vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      opacity: 0;
+      animation: fadeUp 0.7s 0.35s forwards;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--rust);
+    }
+    .hero-sub {
+      margin-top: 28px;
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 400px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.5s forwards;
+    }
+    .hero-ctas {
+      margin-top: 44px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.65s forwards;
+    }
+    .btn-primary {
+      background: var(--rust);
+      color: #fff;
+      border: none;
+      padding: 16px 36px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--brown);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(192,84,26,0.3);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--ink);
+      padding: 15px 32px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: none;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+    .btn-outline:hover { background: var(--ink); color: var(--cream); transform: translateY(-2px); }
+
+    .hero-stats {
+      margin-top: 60px;
+      display: flex;
+      gap: 40px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.8s forwards;
+    }
+    .stat-item { display: flex; flex-direction: column; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 60px;
+      overflow: hidden;
+    }
+    .hero-bg-text {
+      position: absolute;
+      font-family: 'Playfair Display', serif;
+      font-size: 22vw;
+      font-weight: 900;
+      color: rgba(92,61,46,0.04);
+      white-space: nowrap;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      letter-spacing: -0.05em;
+    }
+    .books-stack {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      position: relative;
+      z-index: 2;
+      animation: floatBooks 6s ease-in-out infinite;
+    }
+    @keyframes floatBooks {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50% { transform: translateY(-18px) rotate(1deg); }
+    }
+
+    .book {
+      position: relative;
+      border-radius: 3px 6px 6px 3px;
+      box-shadow: 4px 6px 20px rgba(26,20,16,0.25), inset -3px 0 8px rgba(0,0,0,0.1);
+      cursor: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+      animation: fadeUp 0.6s both;
+    }
+    .book:hover {
+      transform: translateY(-12px) rotate(-2deg) !important;
+      box-shadow: 8px 20px 40px rgba(26,20,16,0.35);
+    }
+
+    .book-1 { width: 70px; height: 220px; background: linear-gradient(135deg, #8B4513, #6B3410); animation-delay: 0.2s; transform: rotate(-3deg); }
+    .book-2 { width: 60px; height: 260px; background: linear-gradient(135deg, #2C5F8A, #1A3F5C); animation-delay: 0.35s; transform: rotate(2deg); }
+    .book-3 { width: 85px; height: 300px; background: linear-gradient(135deg, #C0541A, #8B3A12); animation-delay: 0.5s; transform: rotate(-1deg); }
+    .book-4 { width: 55px; height: 240px; background: linear-gradient(135deg, #3D5A35, #2A3F26); animation-delay: 0.65s; transform: rotate(3deg); }
+    .book-5 { width: 75px; height: 280px; background: linear-gradient(135deg, #6B3566, #4A2347); animation-delay: 0.8s; transform: rotate(-2deg); }
+
+    .book::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 3px 0 0 3px;
+    }
+    .book-title-text {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      white-space: nowrap;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.15em;
+    }
+
+    /* Marquee */
+    .marquee-wrap {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-track {
+      display: inline-flex;
+      animation: marqueeScroll 22s linear infinite;
+    }
+    .marquee-item {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0 40px;
+      font-weight: 500;
+      color: var(--cream);
+    }
+    .marquee-item span {
+      color: var(--gold);
+      margin: 0 16px;
+    }
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* SECTION COMMONS */
+    section { padding: 100px 60px; }
+    .section-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rust);
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .section-sub {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.7;
+      max-width: 480px;
+    }
+
+    /* FEATURED BOOKS */
+    .featured { background: var(--warm); }
+    .featured-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 60px;
+    }
+    .link-browse {
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--rust);
+      text-decoration: none;
+      border-bottom: 1px solid var(--rust);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+    .link-browse:hover { opacity: 0.7; }
+
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+    }
+    .book-card {
+      background: var(--cream);
+      overflow: hidden;
+      position: relative;
+      cursor: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+      group: true;
+    }
+    .book-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 60px rgba(26,20,16,0.15);
+    }
+    .book-cover {
+      width: 100%;
+      aspect-ratio: 3/4;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover-bg {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+    }
+    .cover-title-display {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      text-align: center;
+      line-height: 1.2;
+      z-index: 2;
+      position: relative;
+    }
+    .cover-author-display {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+    .cover-deco {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0.15;
+    }
+    .book-card-body {
+      padding: 20px;
+    }
+    .book-genre {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .book-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+    .book-author-name {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+      font-style: italic;
+      font-family: 'Libre Baskerville', serif;
+    }
+    .book-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .book-price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ink);
+      font-family: 'Playfair Display', serif;
+    }
+    .book-price .old-price {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: line-through;
+      margin-right: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+    }
+    .btn-add {
+      width: 36px; height: 36px;
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: background 0.2s, transform 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-add:hover { background: var(--rust); transform: scale(1.1); }
+    .badge {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: var(--rust);
+      color: #fff;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      z-index: 3;
+    }
+    .badge-gold { background: var(--gold); color: var(--ink); }
+    .badge-sage { background: var(--sage); }
+
+    .stars { color: var(--gold); font-size: 0.75rem; margin-bottom: 4px; }
+
+    /* Colors for book covers */
+    .c1 { background: linear-gradient(145deg, #8B4513 0%, #5C2D0E 100%); }
+    .c2 { background: linear-gradient(145deg, #1A3F5C 0%, #0D2035 100%); }
+    .c3 { background: linear-gradient(145deg, #3D5A35 0%, #243523 100%); }
+    .c4 { background: linear-gradient(145deg, #5C2D60 0%, #371A3A 100%); }
+
+    /* SVG deco inside covers */
+    .cover-deco circle { fill: rgba(255,255,255,0.5); }
+    .cover-deco line { stroke: rgba(255,255,255,0.5); stroke-width: 1; }
+
+    /* CATEGORIES */
+    .categories { background: var(--cream); }
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+    .cat-card {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1.5px solid rgba(92,61,46,0.15);
+      cursor: none;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      padding: 20px;
+    }
+    .cat-card:hover {
+      border-color: var(--rust);
+      background: var(--warm);
+      transform: scale(1.04);
+    }
+    .cat-icon { font-size: 2rem; }
+    .cat-name {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--ink);
+      text-align: center;
+    }
+    .cat-count { font-size: 0.7rem; color: var(--muted); }
+
+    /* EDITORIAL STRIP */
+    .editorial {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 80px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .editorial-label { color: var(--gold); }
+    .editorial-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--cream);
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+    .editorial-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .editorial-body {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: rgba(245,240,232,0.65);
+      margin-bottom: 32px;
+      font-weight: 300;
+    }
+    .quote-block {
+      border-left: 2px solid var(--gold);
+      padding-left: 28px;
+      margin: 0;
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: var(--cream);
+    }
+    .quote-block cite {
+      display: block;
+      margin-top: 12px;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-style: normal;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* NEWSLETTER */
+    .newsletter {
+      background: var(--warm);
+      text-align: center;
+      padding: 100px 60px;
+    }
+    .newsletter-inner {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .newsletter-form {
+      margin-top: 40px;
+      display: flex;
+      gap: 0;
+      border: 1.5px solid var(--ink);
+    }
+    .newsletter-input {
+      flex: 1;
+      padding: 16px 20px;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+    .newsletter-input::placeholder { color: var(--muted); }
+    .btn-subscribe {
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      padding: 16px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: none;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn-subscribe:hover { background: var(--rust); }
+    .newsletter-fine {
+      margin-top: 16px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--ink);
+      color: rgba(245,240,232,0.5);
+      padding: 70px 60px 40px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 60px;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+    .footer-logo span { color: var(--rust); }
+    .footer-tagline {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      font-weight: 300;
+      color: rgba(245,240,232,0.5);
+      margin-bottom: 24px;
+    }
+    .footer-socials { display: flex; gap: 12px; }
+    .social-icon {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(245,240,232,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      color: rgba(245,240,232,0.5);
+      cursor: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .social-icon:hover { border-color: var(--gold); color: var(--gold); }
+    .footer-col-title {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cream);
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      font-size: 0.85rem;
+      color: rgba(245,240,232,0.5);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom {
+      border-top: 1px solid rgba(245,240,232,0.1);
+      padding-top: 28px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 1024px) {
+      nav { padding: 20px 30px; }
+      section { padding: 80px 30px; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-visual { display: none; }
+      .books-grid { grid-template-columns: repeat(2, 1fr); }
+      .categories-grid { grid-template-columns: repeat(3, 1fr); }
+      .editorial { grid-template-columns: 1fr; gap: 40px; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Folio<span>&</span>Co.</div>
+    <ul class="nav-links">
+      <li><a href="#">New Arrivals</a></li>
+      <li><a href="#">Bestsellers</a></li>
+      <li><a href="#">Categories</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn-cart">🛒 Cart (0)</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <p class="hero-eyebrow">✦ Est. 2024 — Curated Reads</p>
+      <h1 class="hero-title">
+        Every great<br/>story starts<br/>with <em>one page.</em>
+      </h1>
+      <p class="hero-sub">
+        Discover handpicked books across every genre — from timeless classics to today's must-reads. Your next obsession is waiting.
+      </p>
+      <div class="hero-ctas">
+        <button class="btn-primary">Browse Collection</button>
+        <button class="btn-outline">View Bestsellers</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">12K+</span>
+          <span class="stat-label">Books</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">480+</span>
+          <span class="stat-label">Authors</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">98%</span>
+          <span class="stat-label">Happy Readers</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-bg-text">READ</div>
+      <div class="books-stack">
+        <div class="book book-1"><span class="book-title-text">CLASSICS</span></div>
+        <div class="book book-2"><span class="book-title-text">FICTION</span></div>
+        <div class="book book-3"><span class="book-title-text">PHILOSOPHY</span></div>
+        <div class="book book-4"><span class="book-title-text">POETRY</span></div>
+        <div class="book book-5"><span class="book-title-text">HISTORY</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">Free Shipping on Orders Over ₹499 <span>✦</span></span>
+      <span class="marquee-item">New Arrivals Every Monday <span>✦</span></span>
+      <span class="marquee-item">Signed Editions Available <span>✦</span></span>
+      <span class="marquee-item">Gift Wrapping Included <span>✦</span></span>
+      <span class="marquee-item">30-Day Easy Returns <span>✦</span></span>
+      <span class="marquee-item">Loyalty Points on Every Purchase <span>✦</span></span>
+      <span class="marquee-item">Free Shipping on Orders Over ₹499 <span>✦</span></span>
+      <span class="marquee-item">New Arrivals Every Monday <span>✦</span></span>
+      <span class="marquee-item">Signed Editions Available <span>✦</span></span>
+      <span class="marquee-item">Gift Wrapping Included <span>✦</span></span>
+      <span class="marquee-item">30-Day Easy Returns <span>✦</span></span>
+      <span class="marquee-item">Loyalty Points on Every Purchase <span>✦</span></span>
+    </div>
+  </div>
+
+  <!-- FEATURED BOOKS -->
+  <section class="featured">
+    <div class="featured-header reveal">
+      <div>
+        <p class="section-label">✦ This Week's Picks</p>
+        <h2 class="section-title">Bestselling Books</h2>
+        <p class="section-sub">Handpicked by our editorial team — because good taste matters.</p>
+      </div>
+      <a href="#" class="link-browse">Browse All →</a>
+    </div>
+    <div class="books-grid">
+
+      <!-- Book 1 -->
+      <div class="book-card reveal">
+        <div class="badge badge-gold">Bestseller</div>
+        <div class="book-cover">
+          <div class="cover-bg c1">
+            <svg class="cover-deco" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="100" cy="80" r="60"/>
+              <circle cx="100" cy="80" r="40" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+            </svg>
+            <div class="cover-title-display">The Midnight<br/>Library</div>
+            <div class="cover-author-display">Matt Haig</div>
+          </div>
+        </div>
+        <div class="book-card-body">
+          <p class="book-genre">Fiction</p>
+          <div class="stars">★★★★★</div>
+          <h3 class="book-name">The Midnight Library</h3>
+          <p class="book-author-name">by Matt Haig</p>
+          <div class="book-footer">
+            <div class="book-price"><span class="old-price">₹599</span>₹399</div>
+            <button class="btn-add">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Book 2 -->
+      <div class="book-card reveal" style="transition-delay:0.1s">
+        <div class="badge">New</div>
+        <div class="book-cover">
+          <div class="cover-bg c2">
+            <svg class="cover-deco" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+              <line x1="0" y1="0" x2="200" y2="260"/>
+              <line x1="200" y1="0" x2="0" y2="260"/>
+              <line x1="100" y1="0" x2="100" y2="260"/>
+              <line x1="0" y1="130" x2="200" y2="130"/>
+            </svg>
+            <div class="cover-title-display">Atomic<br/>Habits</div>
+            <div class="cover-author-display">James Clear</div>
+          </div>
+        </div>
+        <div class="book-card-body">
+          <p class="book-genre">Self-Help</p>
+          <div class="stars">★★★★★</div>
+          <h3 class="book-name">Atomic Habits</h3>
+          <p class="book-author-name">by James Clear</p>
+          <div class="book-footer">
+            <div class="book-price">₹449</div>
+            <button class="btn-add">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Book 3 -->
+      <div class="book-card reveal" style="transition-delay:0.2s">
+        <div class="badge badge-sage">Staff Pick</div>
+        <div class="book-cover">
+          <div class="cover-bg c3">
+            <svg class="cover-deco" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="60" cy="180" r="80"/>
+              <circle cx="140" cy="80" r="60"/>
+            </svg>
+            <div class="cover-title-display">Sapiens</div>
+            <div class="cover-author-display">Yuval Noah Harari</div>
+          </div>
+        </div>
+        <div class="book-card-body">
+          <p class="book-genre">History</p>
+          <div class="stars">★★★★☆</div>
+          <h3 class="book-name">Sapiens</h3>
+          <p class="book-author-name">by Yuval Noah Harari</p>
+          <div class="book-footer">
+            <div class="book-price"><span class="old-price">₹699</span>₹499</div>
+            <button class="btn-add">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Book 4 -->
+      <div class="book-card reveal" style="transition-delay:0.3s">
+        <div class="book-cover">
+          <div class="cover-bg c4">
+            <svg class="cover-deco" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="100" cy="130" r="100"/>
+              <circle cx="100" cy="130" r="70"/>
+              <circle cx="100" cy="130" r="40"/>
+            </svg>
+            <div class="cover-title-display">The Alchemist</div>
+            <div class="cover-author-display">Paulo Coelho</div>
+          </div>
+        </div>
+        <div class="book-card-body">
+          <p class="book-genre">Philosophy</p>
+          <div class="stars">★★★★★</div>
+          <h3 class="book-name">The Alchemist</h3>
+          <p class="book-author-name">by Paulo Coelho</p>
+          <div class="book-footer">
+            <div class="book-price">₹299</div>
+            <button class="btn-add">+</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="categories">
+    <div class="reveal" style="text-align:center; max-width:500px; margin:0 auto;">
+      <p class="section-label">✦ Explore by Genre</p>
+      <h2 class="section-title">Find Your<br/>Next Adventure</h2>
+    </div>
+    <div class="categories-grid reveal">
+      <div class="cat-card"><div class="cat-icon">🔮</div><div class="cat-name">Fantasy</div><div class="cat-count">2,140 titles</div></div>
+      <div class="cat-card"><div class="cat-icon">🔍</div><div class="cat-name">Mystery</div><div class="cat-count">1,880 titles</div></div>
+      <div class="cat-card"><div class="cat-icon">📖</div><div class="cat-name">Classics</div><div class="cat-count">980 titles</div></div>
+      <div class="cat-card"><div class="cat-icon">🧠</div><div class="cat-name">Non-Fiction</div><div class="cat-count">3,200 titles</div></div>
+      <div class="cat-card"><div class="cat-icon">💕</div><div class="cat-name">Romance</div><div class="cat-count">1,560 titles</div></div>
+      <div class="cat-card"><div class="cat-icon">🚀</div><div class="cat-name">Sci-Fi</div><div class="cat-count">1,340 titles</div></div>
+    </div>
+  </section>
+
+  <!-- EDITORIAL STRIP -->
+  <div class="editorial">
+    <div class="reveal">
+      <p class="section-label editorial-label">✦ Our Philosophy</p>
+      <h2 class="editorial-title">Books that <em>move</em><br/>you, change you,<br/>stay with you.</h2>
+      <p class="editorial-body">
+        We believe every book chosen well is a life altered. Our curators scour publishers, prize lists, and reader communities to bring you titles that resonate far beyond the final page.
+      </p>
+      <button class="btn-primary">Our Story →</button>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s">
+      <blockquote class="quote-block">
+        "A reader lives a thousand lives before he dies. The man who never reads lives only one."
+        <cite>— George R.R. Martin</cite>
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <div class="newsletter-inner reveal">
+      <p class="section-label" style="text-align:center;">✦ Stay in the Loop</p>
+      <h2 class="section-title">Reading recommendations,<br/>straight to your inbox.</h2>
+      <p class="section-sub" style="margin:16px auto 0; text-align:center;">
+        Monthly curations, exclusive discounts, author spotlights — no spam, just good books.
+      </p>
+      <div class="newsletter-form">
+        <input class="newsletter-input" type="email" placeholder="Your email address…"/>
+        <button class="btn-subscribe">Subscribe</button>
+      </div>
+      <p class="newsletter-fine">No spam. Unsubscribe anytime. We read every reply.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Folio<span>&</span>Co.</div>
+        <p class="footer-tagline">
+          Your neighbourhood bookshop, delivered. Curating stories since 2024.
+        </p>
+        <div class="footer-socials">
+          <div class="social-icon">𝕏</div>
+          <div class="social-icon">in</div>
+          <div class="social-icon">ig</div>
+          <div class="social-icon">yt</div>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Shop</p>
+        <ul class="footer-links">
+          <li><a href="#">New Arrivals</a></li>
+          <li><a href="#">Bestsellers</a></li>
+          <li><a href="#">Award Winners</a></li>
+          <li><a href="#">Sale Books</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">Help</p>
+        <ul class="footer-links">
+          <li><a href="#">Track My Order</a></li>
+          <li><a href="#">Returns & Refunds</a></li>
+          <li><a href="#">Gift Cards</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">Company</p>
+        <ul class="footer-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Folio & Co. All rights reserved.</span>
+      <span>Privacy Policy · Terms of Service</span>
+    </div>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      cursorRing.style.left = rx + 'px';
+      cursorRing.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('button, a, .book-card, .cat-card').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        cursorRing.style.width = '52px';
+        cursorRing.style.height = '52px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '12px';
+        cursor.style.height = '12px';
+        cursorRing.style.width = '36px';
+        cursorRing.style.height = '36px';
+      });
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => io.observe(el));
+
+    // Cart counter
+    let cartCount = 0;
+    const cartBtn = document.querySelector('.btn-cart');
+    document.querySelectorAll('.btn-add').forEach(btn => {
+      btn.addEventListener('click', () => {
+        cartCount++;
+        cartBtn.textContent = `🛒 Cart (${cartCount})`;
+        btn.textContent = '✓';
+        btn.style.background = 'var(--sage)';
+        setTimeout(() => { btn.textContent = '+'; btn.style.background = ''; }, 1200);
+      });
+    });
+  </script>
+</body>
+</html>
